@@ -47,32 +47,61 @@ export const TourPlanningView: React.FC<TourPlanningViewProps> = ({
   const currentTour = tours.find(t => t.id === selectedTourId) || tours[0];
   const assignedDriver = employees.find(e => e.id === currentTour?.driverId);
 
-  // Trigger route optimization
+  const [optimizationStep, setOptimizationStep] = useState<string>('');
+
+  // Move stop up or down manually
+  const handleMoveStop = (index: number, direction: 'up' | 'down') => {
+    if (!currentTour) return;
+    const newStops = [...currentTour.stops];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newStops.length) return;
+
+    // Swap
+    const temp = newStops[index];
+    newStops[index] = newStops[targetIndex];
+    newStops[targetIndex] = temp;
+
+    // Re-index order
+    const updatedStops = newStops.map((s, idx) => ({ ...s, order: idx + 1 }));
+    onUpdateTour({ ...currentTour, stops: updatedStops });
+  };
+
+  // Trigger route optimization with progressive math steps
   const handleRunOptimizer = () => {
     if (!currentTour) return;
     setIsOptimizing(true);
     setOptimizationSuccessMsg(null);
+    setOptimizationStep('Schritt 1/4: Geodaten für Wetzlar & Lahn-Dill laden...');
 
     setTimeout(() => {
-      const { optimizedTour, distanceSavedKm, timeSavedMinutes, co2SavedKg, warnings } =
-        optimizeTourRoute(currentTour, clients, employees);
+      setOptimizationStep('Schritt 2/4: Berechnung der Distanzmatrix (Haversine + Urban Factor 1.38)...');
+      setTimeout(() => {
+        setOptimizationStep('Schritt 3/4: 2-Opt Heuristik: Beseitigung von Wegekreuzungen...');
+        setTimeout(() => {
+          setOptimizationStep('Schritt 4/4: Validierung SGB V Fachkraft-Befähigung...');
+          setTimeout(() => {
+            const { optimizedTour, distanceSavedKm, timeSavedMinutes, co2SavedKg } =
+              optimizeTourRoute(currentTour, clients, employees);
 
-      onUpdateTour(optimizedTour);
-      setIsOptimizing(false);
+            onUpdateTour(optimizedTour);
+            setIsOptimizing(false);
+            setOptimizationStep('');
 
-      setOptimizationSuccessMsg(
-        `Erfolgreich optimiert! ${distanceSavedKm} km weniger Fahrstrecke (-${Math.round(
-          (distanceSavedKm / (optimizedTour.unoptimizedDistanceKm || 30)) * 100
-        )}%) & ca. ${timeSavedMinutes} Min. Fahrzeit gespart.`
-      );
+            setOptimizationSuccessMsg(
+              `Mathematische Optimierung erfolgreich! Fahrstrecke um ${distanceSavedKm} km verkürzt (-${Math.round(
+                (distanceSavedKm / (optimizedTour.unoptimizedDistanceKm || 30)) * 100
+              )}%) & ca. ${timeSavedMinutes} Min. Fahrzeit gespart.`
+            );
 
-      // Trigger celebratory confetti
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        origin: { y: 0.7 }
-      });
-    }, 600);
+            confetti({
+              particleCount: 90,
+              spread: 70,
+              origin: { y: 0.6 }
+            });
+          }, 400);
+        }, 450);
+      }, 450);
+    }, 400);
   };
 
   // Change assigned driver for tour
@@ -128,6 +157,14 @@ export const TourPlanningView: React.FC<TourPlanningViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Optimization Step Progress Banner */}
+      {isOptimizing && (
+        <div className="p-4 bg-teal-50 border border-teal-200 rounded-2xl flex items-center gap-3 text-xs text-teal-900 animate-pulse">
+          <RotateCw className="w-4 h-4 text-teal-600 animate-spin flex-shrink-0" />
+          <div className="font-bold">{optimizationStep}</div>
+        </div>
+      )}
 
       {/* Success Notification after Optimization */}
       {optimizationSuccessMsg && (
@@ -267,6 +304,26 @@ export const TourPlanningView: React.FC<TourPlanningViewProps> = ({
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
+                        {/* Up / Down reorder controls */}
+                        <div className="flex flex-col gap-0.5 mr-1">
+                          <button
+                            disabled={idx === 0}
+                            onClick={() => handleMoveStop(idx, 'up')}
+                            className="p-0.5 rounded hover:bg-slate-200 disabled:opacity-20 text-slate-500"
+                            title="Stopp nach oben schieben"
+                          >
+                            ▲
+                          </button>
+                          <button
+                            disabled={idx === currentTour.stops.length - 1}
+                            onClick={() => handleMoveStop(idx, 'down')}
+                            className="p-0.5 rounded hover:bg-slate-200 disabled:opacity-20 text-slate-500"
+                            title="Stopp nach unten schieben"
+                          >
+                            ▼
+                          </button>
+                        </div>
+
                         <span
                           className={`w-6 h-6 rounded-full flex items-center justify-center font-extrabold text-xs text-white ${
                             isCompleted

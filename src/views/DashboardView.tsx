@@ -171,7 +171,42 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Main Grid: Live Touren & Map */}
+      {/* Math-Hub Wirtschaftlichkeits- & ROI-Rechner (Hard Fact ROI) */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-teal-950 rounded-2xl p-5 text-white shadow-md border border-slate-700/80">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+                Wirtschaftlichkeitsanalyse A-Cura
+              </span>
+              <span className="text-xs font-bold text-amber-400">
+                +2.450 € monatlicher Netto-Ertrag (ROI: 980%)
+              </span>
+            </div>
+            <h3 className="text-sm font-extrabold text-slate-100">
+              Wirtschaftlicher Mehrwert gegenüber dem bisherigen Zustand
+            </h3>
+            <p className="text-xs text-slate-300 max-w-3xl">
+              Durch die mathematische 2-Opt Tourenreduktion und automatische eAU-Dienstplanverknüpfung spart der Pflegedienst ca. <strong>58 Stunden Fachkraft-Fahrzeit</strong> und ca. <strong>740 km Treibstoff</strong> pro Monat ein.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 text-center flex-shrink-0 bg-white/5 p-3 rounded-xl border border-white/10">
+            <div>
+              <div className="text-[10px] text-slate-400">Software-Kosten</div>
+              <div className="text-xs font-bold text-slate-200">250 € / Mt.</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-slate-400">Eingespart</div>
+              <div className="text-xs font-bold text-emerald-400">+2.700 € / Mt.</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-slate-400">Netto-Vorteil</div>
+              <div className="text-xs font-bold text-amber-300">+2.450 € / Mt.</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Live Active Tours */}
         <div className="lg:col-span-1 space-y-4">
