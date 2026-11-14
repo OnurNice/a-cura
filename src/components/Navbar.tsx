@@ -104,12 +104,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
               <img
                 src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80"
-                alt="Sabrina Keller"
+                alt="Mehtap Sarac"
                 className="w-8 h-8 rounded-full object-cover ring-2 ring-brand-500/30"
               />
               <div className="hidden xl:block text-left">
-                <div className="text-xs font-bold text-slate-800 leading-tight">Sabrina Keller</div>
-                <div className="text-[10px] text-slate-500 font-medium">PDL • Pflegedienstleitung</div>
+                <div className="text-xs font-bold text-slate-800 leading-tight">Mehtap Sarac</div>
+                <div className="text-[10px] text-slate-500 font-medium">Inhaberin • PDL Wetzlar</div>
               </div>
             </div>
 

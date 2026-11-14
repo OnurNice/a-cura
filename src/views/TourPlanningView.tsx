@@ -243,7 +243,7 @@ export const TourPlanningView: React.FC<TourPlanningViewProps> = ({
                 <span>Geplante Stopps ({currentTour.stops.length})</span>
               </h3>
               <span className="text-[11px] text-slate-500">
-                Depot: Philosophenweg 14 (HQ)
+                Depot: Ostendstraße 10, Wetzlar (HQ)
               </span>
             </div>
 
@@ -329,7 +329,7 @@ export const TourPlanningView: React.FC<TourPlanningViewProps> = ({
               <span>Kartendarstellung Tour Wetzlar</span>
             </div>
             <div className="text-xs text-slate-500">
-              Start & Ende: Zentrale Philosophenweg
+              Start & Ende: Zentrale Ostendstraße (Naunheim)
             </div>
           </div>
 

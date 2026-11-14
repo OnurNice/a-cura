@@ -1,32 +1,34 @@
 import { Employee, Client, Tour, Shift, Absence, PayrollRecord } from '../types';
 
 export const A_CURA_HQ = {
-  name: 'A-Cura Pflegedienst Zentrale Wetzlar',
-  address: 'Philosophenweg 14',
-  zip: '35578',
-  city: 'Wetzlar',
-  lat: 50.5562,
-  lng: 8.5034,
-  phone: '06441 / 982 45-0',
-  email: 'zentrale@a-cura.de'
+  name: 'A-Cura Betreuungs- & Pflegedienst Wetzlar',
+  address: 'Ostendstraße 10',
+  zip: '35584',
+  city: 'Wetzlar (Naunheim)',
+  lat: 50.5795,
+  lng: 8.5230,
+  phone: '06441 / 7869627',
+  mobile: '0157 / 54150233',
+  email: 'info@a-cura.de',
+  owner: 'Mehtap Sarac'
 };
 
 export const INITIAL_EMPLOYEES: Employee[] = [
   {
     id: 'emp-1',
-    name: 'Sabrina Keller',
+    name: 'Mehtap Sarac',
     role: 'PDL',
-    qualifications: ['Examinierte Pflegefachkraft', 'Pflegedienstleitung (PDL)', 'Wundexpertin ICW', 'B-Führerschein'],
+    qualifications: ['Inhaberin & Pflegedienstleitung (PDL)', 'Examinierte Fachkraft', 'Pflegeberaterin § 37.3', 'B-Führerschein'],
     hasDriverLicense: true,
     assignedVehicle: 'VW ID.3 (LDK-AC 101)',
-    phone: '0171 / 849 2011',
-    email: 's.keller@a-cura.de',
-    address: 'Bergstraße 14, 35578 Wetzlar',
+    phone: '0157 / 54150233',
+    email: 'sarac@a-cura.de',
+    address: 'Ostendstraße 10, 35584 Wetzlar',
     contractHours: 40,
-    hourlyWage: 28.50,
+    hourlyWage: 32.00,
     vacationDaysPerYear: 30,
-    remainingVacationDays: 14,
-    overtimeHours: 6.5,
+    remainingVacationDays: 16,
+    overtimeHours: 4.5,
     status: 'active',
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80'
   },

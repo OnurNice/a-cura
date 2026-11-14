@@ -54,7 +54,7 @@ export const PublicWebsiteView: React.FC<PublicWebsiteViewProps> = ({
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1 text-emerald-400 font-semibold">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              24h Rufbereitschaft Wetzlar: 06441 / 982 45-0
+              24h Betreuung Wetzlar: 06441 / 7869627 • Mobil: 0157 / 54150233
             </span>
             <span className="hidden md:inline text-slate-400">•</span>
             <span className="hidden md:inline text-slate-300">
@@ -102,11 +102,11 @@ export const PublicWebsiteView: React.FC<PublicWebsiteViewProps> = ({
                   <span>Pflegegrad-Leistungen berechnen</span>
                 </a>
                 <a
-                  href="tel:06441982450"
+                  href="tel:064417869627"
                   className="px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm rounded-2xl border border-slate-200 shadow-xs transition flex items-center gap-2"
                 >
                   <PhoneCall className="w-4 h-4 text-emerald-600" />
-                  <span>06441 / 982 45-0</span>
+                  <span>06441 / 7869627</span>
                 </a>
               </div>
 
@@ -140,9 +140,9 @@ export const PublicWebsiteView: React.FC<PublicWebsiteViewProps> = ({
                     <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                     <span>Wetzlar & Umgebung</span>
                   </div>
-                  <h3 className="text-xl font-black">Philosophenweg 14, Wetzlar</h3>
+                  <h3 className="text-xl font-black">Ostendstraße 10, 35584 Wetzlar</h3>
                   <p className="text-xs text-slate-200 mt-1">
-                    Unser Stützpunkt für ambulante Grund- & Behandlungspflege
+                    Stützpunkt für ambulante Betreuung, Alltagsbegleitung & Pflege
                   </p>
                 </div>
               </div>
@@ -382,7 +382,7 @@ export const PublicWebsiteView: React.FC<PublicWebsiteViewProps> = ({
             <span>• Pflegedienst Wetzlar</span>
           </div>
           <div className="flex items-center gap-4 text-[11px]">
-            <span>Philosophenweg 14, 35578 Wetzlar</span>
+            <span>Ostendstraße 10, 35584 Wetzlar • Inhaberin: Mehtap Sarac</span>
             <span>•</span>
             <button onClick={onSwitchToApp} className="text-brand-400 hover:underline">
               Mitarbeiter-Portal (Intern)

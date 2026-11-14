@@ -156,14 +156,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="text-xs font-bold">Stützpunkt Wetzlar</div>
           </div>
           <p className="text-[11px] text-slate-300 mb-3">
-            Philosophenweg 14, 35578 Wetzlar
+            Ostendstraße 10, 35584 Wetzlar (Naunheim)
           </p>
           <div className="pt-2 border-t border-slate-700 flex items-center justify-between text-[11px]">
             <span className="text-emerald-400 font-medium flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
               24h Rufbereitschaft
             </span>
-            <span className="font-mono text-slate-300">06441 / 982</span>
+            <span className="font-mono text-slate-300">06441 / 7869</span>
           </div>
         </div>
       </div>
