@@ -20,14 +20,13 @@ export const WetzlarMap: React.FC<WetzlarMapProps> = ({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const layerGroupRef = useRef<L.LayerGroup | null>(null);
 
-  // Colors for different tours
-  const tourColors = ['#0d9488', '#0284c7', '#8b5cf6', '#f59e0b', '#ec4899'];
+  // A-Cura Corporate Blue Palette
+  const tourColors = ['#1d4ed8', '#0284c7', '#475569'];
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
     if (!mapInstanceRef.current) {
-      // Initialize Leaflet Map centered on Wetzlar
       const map = L.map(mapContainerRef.current, {
         center: [A_CURA_HQ.lat, A_CURA_HQ.lng],
         zoom: 13,
@@ -35,9 +34,8 @@ export const WetzlarMap: React.FC<WetzlarMapProps> = ({
         scrollWheelZoom: true
       });
 
-      // Add CartoDB Positron clean map tiles (looks modern, slick and professional)
       L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
         subdomains: 'abcd',
         maxZoom: 19
       }).addTo(map);
@@ -53,32 +51,31 @@ export const WetzlarMap: React.FC<WetzlarMapProps> = ({
 
     layerGroup.clearLayers();
 
-    // 1. Add HQ Marker
+    // 1. HQ Marker (A-Cura Navy)
     const hqIcon = L.divIcon({
       className: 'custom-hq-marker',
       html: `
-        <div style="background: linear-gradient(135deg, #059669, #047857); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(5,150,105,0.4); border: 2px solid white; font-weight: bold; font-size: 14px;">
+        <div style="background: #0f172a; color: white; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(15,23,42,0.3); border: 2px solid white; font-weight: bold; font-size: 13px;">
           🏥
         </div>
       `,
-      iconSize: [36, 36],
-      iconAnchor: [18, 18]
+      iconSize: [34, 34],
+      iconAnchor: [17, 17]
     });
 
     const hqMarker = L.marker([A_CURA_HQ.lat, A_CURA_HQ.lng], { icon: hqIcon }).addTo(layerGroup);
     hqMarker.bindPopup(`
-      <div style="font-family: sans-serif; padding: 4px;">
-        <div style="font-weight: 700; color: #065f46; font-size: 14px;">${A_CURA_HQ.name}</div>
-        <div style="font-size: 12px; color: #4b5563;">${A_CURA_HQ.address}, ${A_CURA_HQ.zip} ${A_CURA_HQ.city}</div>
-        <div style="margin-top: 6px; font-size: 11px; background: #ecfdf5; color: #047857; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: 600;">
-          Start- & Ziel-Depot
+      <div style="font-family: sans-serif; padding: 2px;">
+        <div style="font-weight: 700; color: #0f172a; font-size: 13px;">${A_CURA_HQ.name}</div>
+        <div style="font-size: 11px; color: #64748b;">${A_CURA_HQ.address}, ${A_CURA_HQ.city}</div>
+        <div style="margin-top: 4px; font-size: 10px; background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; display: inline-block; font-weight: 600;">
+          Start & Ziel Depot
         </div>
       </div>
     `);
 
     const bounds = L.latLngBounds([L.latLng(A_CURA_HQ.lat, A_CURA_HQ.lng)]);
 
-    // Filter tours: if activeTourId is selected, show that, otherwise show all
     const displayedTours = activeTourId
       ? tours.filter(t => t.id === activeTourId)
       : tours;
@@ -87,71 +84,54 @@ export const WetzlarMap: React.FC<WetzlarMapProps> = ({
       const color = tourColors[tIndex % tourColors.length];
       const routeCoords: [number, number][] = [[A_CURA_HQ.lat, A_CURA_HQ.lng]];
 
-      tour.stops.forEach((stop, sIndex) => {
+      tour.stops.forEach(stop => {
         const client = clients.find(c => c.id === stop.clientId);
         if (!client) return;
 
         routeCoords.push([client.lat, client.lng]);
         bounds.extend([client.lat, client.lng]);
 
-        // Status badge color
         const isDone = stop.status === 'completed';
         const isProgress = stop.status === 'in_progress';
 
         const markerHtml = `
           <div style="
-            background: ${isDone ? '#10b981' : isProgress ? '#f59e0b' : color};
+            background: ${isDone ? '#059669' : isProgress ? '#f59e0b' : color};
             color: white;
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
-            font-size: 13px;
+            font-weight: 700;
+            font-size: 12px;
             border: 2px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-            position: relative;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
             cursor: pointer;
-            transition: transform 0.2s;
           ">
             ${isDone ? '✓' : stop.order}
-            ${isProgress ? '<span style="position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; border: 1.5px solid white;"></span>' : ''}
           </div>
         `;
 
         const stopIcon = L.divIcon({
           className: 'custom-stop-marker',
           html: markerHtml,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16]
+          iconSize: [28, 28],
+          iconAnchor: [14, 14]
         });
 
         const stopMarker = L.marker([client.lat, client.lng], { icon: stopIcon }).addTo(layerGroup);
 
         stopMarker.bindPopup(`
-          <div style="font-family: sans-serif; min-width: 220px; padding: 2px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <span style="background: ${color}20; color: ${color}; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">
-                Halt #${stop.order} • ${tour.name.split(':')[0]}
-              </span>
-              <span style="font-size: 11px; font-weight: 600; color: #475569;">
-                PG ${client.careLevel}
-              </span>
+          <div style="font-family: sans-serif; min-width: 200px; padding: 2px;">
+            <div style="font-weight: 700; font-size: 13px; color: #0f172a;">${client.name}</div>
+            <div style="font-size: 11px; color: #64748b; margin-bottom: 4px;">
+              ${client.address}, Wetzlar
             </div>
-            <div style="font-weight: 700; font-size: 14px; color: #1e293b;">${client.name}</div>
-            <div style="font-size: 12px; color: #64748b; margin-bottom: 6px;">
-              📍 ${client.address}, ${client.zip} ${client.city}
+            <div style="font-size: 11px; background: #f8fafc; padding: 4px 6px; border-radius: 4px;">
+              ⏰ <strong>${stop.plannedArrival} Uhr</strong> • PG ${client.careLevel}
             </div>
-            <div style="display: flex; gap: 8px; font-size: 12px; background: #f8fafc; padding: 6px; border-radius: 6px; margin-bottom: 6px;">
-              <div>⏰ <strong>${stop.plannedArrival} - ${stop.plannedDeparture}</strong></div>
-              <div>🔑 <strong>${client.keyBox.hasKey ? 'Safe ' + client.keyBox.pinCode : 'Persönlich'}</strong></div>
-            </div>
-            <div style="font-size: 11px; color: #047857; margin-bottom: 4px;">
-              ✓ ${client.sgbXI_Services[0] || 'Grundpflege'}
-            </div>
-            ${client.sgbV_Services.length > 0 ? `<div style="font-size: 11px; color: #0284c7;">💉 ${client.sgbV_Services[0]}</div>` : ''}
           </div>
         `);
 
@@ -160,46 +140,39 @@ export const WetzlarMap: React.FC<WetzlarMapProps> = ({
         });
       });
 
-      // Close circuit back to HQ
+      // Close route back to HQ
       routeCoords.push([A_CURA_HQ.lat, A_CURA_HQ.lng]);
 
-      // Draw polyline connecting HQ and stops
       L.polyline(routeCoords, {
         color: color,
-        weight: activeTourId === tour.id ? 4 : 3,
-        opacity: activeTourId && activeTourId !== tour.id ? 0.4 : 0.85,
-        dashArray: activeTourId === tour.id ? undefined : '6, 8',
+        weight: activeTourId === tour.id ? 4 : 2.5,
+        opacity: activeTourId && activeTourId !== tour.id ? 0.35 : 0.8,
         lineCap: 'round',
         lineJoin: 'round'
       }).addTo(layerGroup);
     });
 
-    // Fit map bounds smoothly
     if (bounds.isValid()) {
-      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+      map.fitBounds(bounds, { padding: [35, 35], maxZoom: 15 });
     }
   }, [tours, clients, activeTourId, onSelectStop]);
 
   return (
-    <div className="relative w-full h-full min-h-[420px] rounded-xl overflow-hidden border border-slate-200 shadow-inner bg-slate-100">
+    <div className="relative w-full h-full min-h-[380px] rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
       <div ref={mapContainerRef} className="w-full h-full" />
-      <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-md px-3 py-2 rounded-lg shadow-md border border-slate-200/80 text-xs flex items-center gap-3 z-[1000]">
-        <div className="flex items-center gap-1.5 font-medium text-slate-700">
-          <span className="w-3 h-3 rounded-full bg-emerald-600 inline-block shadow-sm"></span>
-          <span>A-Cura Zentrale Wetzlar</span>
-        </div>
-        <div className="flex items-center gap-1.5 font-medium text-slate-700">
-          <span className="w-3 h-3 rounded-full bg-teal-600 inline-block shadow-sm"></span>
-          <span>Geplanter Halt</span>
-        </div>
-        <div className="flex items-center gap-1.5 font-medium text-slate-700">
-          <span className="w-3 h-3 rounded-full bg-amber-500 inline-block shadow-sm"></span>
-          <span>Gerade in Pflege</span>
-        </div>
-        <div className="flex items-center gap-1.5 font-medium text-slate-700">
-          <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block shadow-sm"></span>
-          <span>Abgeschlossen</span>
-        </div>
+      <div className="absolute bottom-2.5 left-2.5 bg-white/95 backdrop-blur-xs px-2.5 py-1.5 rounded-lg border border-slate-200 text-[11px] flex items-center gap-3 z-[1000] text-slate-600">
+        <span className="flex items-center gap-1 font-semibold text-slate-800">
+          <span className="w-2 h-2 rounded-full bg-slate-900"></span>
+          Zentrale
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-brand-600"></span>
+          Geplant
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+          Erledigt
+        </span>
       </div>
     </div>
   );

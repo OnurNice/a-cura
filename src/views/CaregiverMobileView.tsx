@@ -1,24 +1,17 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   Smartphone,
   Navigation,
   Phone,
   Key,
   CheckCircle2,
-  Clock,
   HeartPulse,
-  Activity,
   FileSignature,
-  ArrowRight,
-  ShieldAlert,
-  Car,
   ChevronLeft,
-  ChevronRight,
-  User,
-  Sparkles
+  ChevronRight
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { Tour, Client, Employee, TourStop, VitalRecord } from '../types';
+import { Tour, Client, Employee, TourStop } from '../types';
 
 interface CaregiverMobileViewProps {
   tours: Tour[];
@@ -41,7 +34,6 @@ export const CaregiverMobileView: React.FC<CaregiverMobileViewProps> = ({
   const activeTour = tours.find(t => t.id === selectedTourId) || tours[0];
   const driver = employees.find(e => e.id === activeTour?.driverId);
 
-  // Current active stop index or first non-completed
   const inProgressIndex = activeTour?.stops.findIndex(s => s.status === 'in_progress');
   const activeIndex = inProgressIndex !== -1 ? inProgressIndex : 0;
   const [currentStopIndex, setCurrentStopIndex] = useState<number>(
@@ -51,16 +43,12 @@ export const CaregiverMobileView: React.FC<CaregiverMobileViewProps> = ({
   const currentStop = activeTour?.stops[currentStopIndex];
   const currentClient = clients.find(c => c.id === currentStop?.clientId);
 
-  // Form states for current stop
   const [checkedServices, setCheckedServices] = useState<string[]>(
     currentStop?.completedServices || []
   );
-  const [bloodPressureSys, setBloodPressureSys] = useState<string>('128');
-  const [bloodPressureDia, setBloodPressureDia] = useState<string>('82');
-  const [pulse, setPulse] = useState<string>('72');
-  const [bloodSugar, setBloodSugar] = useState<string>('115');
-  const [nurseNotes, setNurseNotes] = useState<string>(currentStop?.nurseNotes || '');
-  const [showKeySafe, setShowKeySafe] = useState<boolean>(false);
+  const [bloodPressureSys, setBloodPressureSys] = useState<string>('125');
+  const [bloodPressureDia, setBloodPressureDia] = useState<string>('80');
+  const [bloodSugar, setBloodSugar] = useState<string>('110');
   const [hasSigned, setHasSigned] = useState<boolean>(Boolean(currentStop?.clientSignature));
 
   const toggleService = (service: string) => {
@@ -69,7 +57,6 @@ export const CaregiverMobileView: React.FC<CaregiverMobileViewProps> = ({
     );
   };
 
-  // Mark current stop as completed & advance to next
   const handleCompleteStop = () => {
     if (!activeTour || !currentStop) return;
 
@@ -83,20 +70,9 @@ export const CaregiverMobileView: React.FC<CaregiverMobileViewProps> = ({
             minute: '2-digit'
           }),
           completedServices: checkedServices,
-          nurseNotes,
-          clientSignature: hasSigned ? 'signed_digital' : undefined,
-          vitalRecord: {
-            id: `vr-${Date.now()}`,
-            timestamp: 'Heute, ' + new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
-            bloodPressureSystolic: Number(bloodPressureSys) || undefined,
-            bloodPressureDiastolic: Number(bloodPressureDia) || undefined,
-            heartRate: Number(pulse) || undefined,
-            bloodSugar: Number(bloodSugar) || undefined,
-            notes: nurseNotes
-          }
+          clientSignature: hasSigned ? 'signed_digital' : undefined
         };
       }
-      // If next stop is pending, promote to in_progress
       if (idx === currentStopIndex + 1 && s.status === 'pending') {
         return {
           ...s,
@@ -112,19 +88,13 @@ export const CaregiverMobileView: React.FC<CaregiverMobileViewProps> = ({
 
     const isAllCompleted = updatedStops.every(s => s.status === 'completed');
 
-    const updatedTour: Tour = {
+    onUpdateTour({
       ...activeTour,
       stops: updatedStops,
       status: isAllCompleted ? 'abgeschlossen' : 'unterwegs'
-    };
-
-    onUpdateTour(updatedTour);
-
-    confetti({
-      particleCount: 50,
-      spread: 50,
-      origin: { y: 0.6 }
     });
+
+    confetti({ particleCount: 40, spread: 50, origin: { y: 0.6 } });
 
     if (currentStopIndex < activeTour.stops.length - 1) {
       setCurrentStopIndex(prev => prev + 1);
@@ -132,125 +102,104 @@ export const CaregiverMobileView: React.FC<CaregiverMobileViewProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-4">
+      {/* Quiet Header */}
+      <div className="flex items-center justify-between pb-3 border-b border-slate-200/80">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-              Pfleger-App (Mobile Ansicht für Unterwegs)
-            </h1>
-            <span className="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded-full">
-              Fahrermodus
-            </span>
-          </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Optimierte Smartphone-Ansicht für die Pflegekraft im Dienstwagen in Wetzlar.
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+            Pfleger-App (Mobile Ansicht)
+          </h1>
+          <p className="text-xs text-slate-500">
+            Fahrermodus für Smartphone im Dienstwagen in Wetzlar.
           </p>
         </div>
 
-        {/* Tour Switcher */}
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-bold text-slate-600">Aktive Tour:</label>
-          <select
-            value={selectedTourId}
-            onChange={e => {
-              setSelectedTourId(e.target.value);
-              setCurrentStopIndex(0);
-            }}
-            className="text-xs font-bold bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:ring-brand-500"
-          >
-            {tours.map(t => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <select
+          value={selectedTourId}
+          onChange={e => {
+            setSelectedTourId(e.target.value);
+            setCurrentStopIndex(0);
+          }}
+          className="text-xs font-medium bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700"
+        >
+          {tours.map(t => (
+            <option key={t.id} value={t.id}>
+              {t.name.split(':')[0]}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* Main Container: Mobile Phone Frame Mockup in Center */}
+      {/* Mobile Mockup (Clean, Calm, A-Cura Blue) */}
       <div className="flex justify-center">
-        <div className="w-full max-w-md bg-slate-900 rounded-[2.5rem] p-3 shadow-2xl border-4 border-slate-800">
-          
-          {/* Phone Speaker Notch */}
-          <div className="w-32 h-4 bg-slate-800 rounded-full mx-auto mb-3 flex items-center justify-center">
-            <div className="w-3 h-3 rounded-full bg-slate-700/60 mr-2"></div>
-            <div className="w-12 h-1.5 bg-slate-700 rounded-full"></div>
+        <div className="w-full max-w-sm bg-slate-900 rounded-[2.5rem] p-3 shadow-xl">
+          {/* Speaker notch */}
+          <div className="w-24 h-3.5 bg-slate-800 rounded-full mx-auto mb-2.5 flex items-center justify-center">
+            <div className="w-8 h-1 bg-slate-700 rounded-full"></div>
           </div>
 
-          {/* Screen Content */}
-          <div className="bg-slate-50 rounded-[2rem] overflow-hidden text-slate-900 shadow-inner flex flex-col min-h-[680px]">
-            
-            {/* Mobile App Header */}
-            <div className="bg-brand-600 text-white p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <img
-                    src={driver?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}
-                    alt={driver?.name}
-                    className="w-8 h-8 rounded-full border border-white/60 object-cover"
-                  />
-                  <div>
-                    <div className="text-xs font-bold leading-tight">{driver?.name}</div>
-                    <div className="text-[10px] text-emerald-100">{driver?.role}</div>
+          <div className="bg-slate-50 rounded-[2rem] overflow-hidden text-slate-900 flex flex-col min-h-[580px]">
+            {/* Header: A-Cura Corporate Blue */}
+            <div className="bg-brand-700 text-white p-3.5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <img
+                  src={driver?.avatar}
+                  alt={driver?.name}
+                  className="w-7 h-7 rounded-full object-cover ring-1 ring-white/50"
+                />
+                <div>
+                  <div className="text-xs font-bold leading-tight">{driver?.name}</div>
+                  <div className="text-[10px] text-brand-200">
+                    Halt {currentStopIndex + 1} von {activeTour?.stops.length}
                   </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-[10px] font-bold bg-emerald-500 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                    {activeTour?.shift}schicht
-                  </span>
-                </div>
               </div>
-
-              {/* Progress counter */}
-              <div className="flex items-center justify-between text-[11px] font-semibold text-emerald-100 pt-1 border-t border-emerald-500/40">
-                <span>Halt {currentStopIndex + 1} von {activeTour?.stops.length}</span>
-                <span>Fahrzeug: {activeTour?.vehicle.split('(')[0]}</span>
-              </div>
+              <span className="text-[10px] font-mono text-brand-200">
+                {activeTour?.vehicle.split('(')[0]}
+              </span>
             </div>
 
-            {/* Stop Switcher buttons (Prev / Next) */}
-            <div className="bg-white border-b border-slate-200 px-3 py-2 flex items-center justify-between">
+            {/* Stepper */}
+            <div className="bg-white border-b border-slate-200/80 px-3 py-2 flex items-center justify-between text-xs">
               <button
                 disabled={currentStopIndex === 0}
                 onClick={() => setCurrentStopIndex(prev => prev - 1)}
-                className="p-1 rounded-lg hover:bg-slate-100 disabled:opacity-30 text-slate-700"
+                className="p-1 text-slate-500 disabled:opacity-20"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="text-xs font-extrabold text-slate-800">
-                Patient #{currentStop?.order}: {currentClient?.name}
+              <span className="font-bold text-slate-800">
+                Halt #{currentStop?.order}: {currentClient?.name}
               </span>
               <button
                 disabled={currentStopIndex === (activeTour?.stops.length || 0) - 1}
                 onClick={() => setCurrentStopIndex(prev => prev + 1)}
-                className="p-1 rounded-lg hover:bg-slate-100 disabled:opacity-30 text-slate-700"
+                className="p-1 text-slate-500 disabled:opacity-20"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Scrollable Patient Detail Area */}
-            {currentClient ? (
-              <div className="p-4 space-y-4 flex-1 overflow-y-auto max-h-[500px]">
-                {/* Client Main Card */}
-                <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
-                  <div className="flex items-start justify-between">
+            {/* Stop Details */}
+            {currentClient && (
+              <div className="p-3.5 space-y-3 flex-1 overflow-y-auto text-xs">
+                {/* Client Card */}
+                <div className="bg-white p-3 rounded-xl border border-slate-200/80 space-y-2">
+                  <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-extrabold text-slate-900 text-base leading-tight">
+                      <div className="font-bold text-slate-900 text-sm">
                         {currentClient.name}
-                      </h3>
-                      <p className="text-xs text-slate-500 mt-0.5">
+                      </div>
+                      <div className="text-[11px] text-slate-400">
                         📍 {currentClient.address}, Wetzlar
-                      </p>
+                      </div>
                     </div>
-                    <span className="text-xs font-extrabold bg-brand-100 text-brand-800 px-2.5 py-1 rounded-lg">
+                    <span className="text-[10px] font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded">
                       PG {currentClient.careLevel}
                     </span>
                   </div>
 
-                  {/* Navigation & Call Quick Buttons */}
+                  {/* Clean 2-Action Row */}
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <a
                       href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
@@ -258,207 +207,123 @@ export const CaregiverMobileView: React.FC<CaregiverMobileViewProps> = ({
                       )}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition"
+                      className="py-1.5 px-2 bg-brand-50 hover:bg-brand-100 text-brand-800 rounded-lg text-center font-medium text-[11px] flex items-center justify-center gap-1 border border-brand-200/60"
                     >
-                      <Navigation className="w-3.5 h-3.5" />
+                      <Navigation className="w-3 h-3 text-brand-600" />
                       <span>Navigation</span>
                     </a>
                     <a
                       href={`tel:${currentClient.phone}`}
-                      className="py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition"
+                      className="py-1.5 px-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-lg text-center font-medium text-[11px] flex items-center justify-center gap-1 border border-slate-200/80"
                     >
-                      <Phone className="w-3.5 h-3.5" />
+                      <Phone className="w-3 h-3 text-slate-500" />
                       <span>Anrufen</span>
                     </a>
                   </div>
 
-                  {/* Key Safe box */}
-                  <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-700 flex items-center gap-1.5">
-                        <Key className="w-3.5 h-3.5 text-amber-500" />
-                        <span>Schlüsselsafe:</span>
+                  {currentClient.keyBox.hasKey && (
+                    <div className="bg-slate-50 p-2 rounded-lg text-[11px] flex items-center justify-between text-slate-600">
+                      <span className="flex items-center gap-1">
+                        <Key className="w-3 h-3 text-slate-400" />
+                        <span>Schlüsseltresor:</span>
                       </span>
-                      {currentClient.keyBox.hasKey ? (
-                        <button
-                          onClick={() => setShowKeySafe(!showKeySafe)}
-                          className="font-mono font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded text-[11px]"
-                        >
-                          {showKeySafe ? currentClient.keyBox.pinCode : '•• Code anzeigen'}
-                        </button>
-                      ) : (
-                        <span className="text-slate-400">Kein Safe (Klingeln)</span>
-                      )}
-                    </div>
-                    {currentClient.keyBox.location && (
-                      <div className="text-[11px] text-slate-500 mt-1">
-                        Ort: {currentClient.keyBox.location}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Important Medical Notes / Allergies */}
-                  {currentClient.allergiesNotes && (
-                    <div className="bg-rose-50 border border-rose-200/80 p-2.5 rounded-xl text-xs">
-                      <div className="font-bold text-rose-800 flex items-center gap-1 mb-0.5">
-                        <ShieldAlert className="w-3.5 h-3.5" />
-                        <span>Wichtiger Pflegehinweis:</span>
-                      </div>
-                      <div className="text-[11px] text-rose-700 font-medium">
-                        {currentClient.allergiesNotes}
-                      </div>
+                      <span className="font-mono font-bold text-slate-800">
+                        PIN {currentClient.keyBox.pinCode}
+                      </span>
                     </div>
                   )}
                 </div>
 
-                {/* Services Checklist */}
-                <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-                  <div className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center justify-between">
-                    <span>Leistungen abhaken</span>
-                    <span className="text-brand-600 font-semibold text-[11px]">
-                      {checkedServices.length} ausgewählt
-                    </span>
+                {/* Services Check */}
+                <div className="bg-white p-3 rounded-xl border border-slate-200/80 space-y-1.5">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Leistungen
                   </div>
-
-                  <div className="space-y-1.5 text-xs">
-                    {/* SGB XI */}
-                    {currentClient.sgbXI_Services.map(srv => {
-                      const isChecked = checkedServices.includes(srv);
-                      return (
-                        <label
-                          key={srv}
-                          onClick={() => toggleService(srv)}
-                          className={`flex items-start gap-2.5 p-2 rounded-xl border cursor-pointer transition ${
-                            isChecked
-                              ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-semibold'
-                              : 'bg-slate-50 border-slate-200 text-slate-700'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => {}}
-                            className="mt-0.5 rounded text-brand-600 focus:ring-brand-500"
-                          />
-                          <span className="text-[11px] leading-tight">{srv}</span>
-                        </label>
-                      );
-                    })}
-
-                    {/* SGB V */}
-                    {currentClient.sgbV_Services.map(srv => {
-                      const isChecked = checkedServices.includes(srv);
-                      return (
-                        <label
-                          key={srv}
-                          onClick={() => toggleService(srv)}
-                          className={`flex items-start gap-2.5 p-2 rounded-xl border cursor-pointer transition ${
-                            isChecked
-                              ? 'bg-blue-50 border-blue-300 text-blue-950 font-semibold'
-                              : 'bg-slate-50 border-slate-200 text-slate-700'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => {}}
-                            className="mt-0.5 rounded text-blue-600 focus:ring-blue-500"
-                          />
-                          <span className="text-[11px] leading-tight">💉 {srv}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
+                  {currentClient.sgbXI_Services.concat(currentClient.sgbV_Services).map(srv => {
+                    const isChecked = checkedServices.includes(srv);
+                    return (
+                      <label
+                        key={srv}
+                        onClick={() => toggleService(srv)}
+                        className={`flex items-start gap-2 p-2 rounded-lg border cursor-pointer text-[11px] ${
+                          isChecked
+                            ? 'bg-brand-50 border-brand-200 text-brand-900 font-medium'
+                            : 'bg-slate-50 border-slate-200/60 text-slate-600'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {}}
+                          className="mt-0.5 rounded text-brand-600"
+                        />
+                        <span className="leading-tight">{srv}</span>
+                      </label>
+                    );
+                  })}
                 </div>
 
-                {/* Vital Signs Input */}
-                <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-                  <div className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                    <HeartPulse className="w-4 h-4 text-rose-500" />
-                    <span>Vitalwerte erfassen</span>
+                {/* Vital Values */}
+                <div className="bg-white p-3 rounded-xl border border-slate-200/80 space-y-1.5">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                    <HeartPulse className="w-3 h-3 text-brand-600" />
+                    <span>Vitalwerte</span>
                   </div>
-
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <label className="text-[10px] text-slate-500 font-bold block mb-0.5">
-                        Blutdruck (RR)
-                      </label>
+                      <span className="text-[10px] text-slate-400 block">Blutdruck</span>
                       <div className="flex items-center gap-1">
                         <input
                           type="number"
                           value={bloodPressureSys}
                           onChange={e => setBloodPressureSys(e.target.value)}
-                          placeholder="120"
-                          className="w-14 p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-center"
+                          className="w-12 p-1 bg-slate-50 border border-slate-200 rounded text-center text-xs font-semibold"
                         />
-                        <span className="text-slate-400">/</span>
+                        <span className="text-slate-300">/</span>
                         <input
                           type="number"
                           value={bloodPressureDia}
                           onChange={e => setBloodPressureDia(e.target.value)}
-                          placeholder="80"
-                          className="w-14 p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-center"
+                          className="w-12 p-1 bg-slate-50 border border-slate-200 rounded text-center text-xs font-semibold"
                         />
                       </div>
                     </div>
-
                     <div>
-                      <label className="text-[10px] text-slate-500 font-bold block mb-0.5">
-                        Blutzucker (mg/dl)
-                      </label>
+                      <span className="text-[10px] text-slate-400 block">Blutzucker (mg/dl)</span>
                       <input
                         type="number"
                         value={bloodSugar}
                         onChange={e => setBloodSugar(e.target.value)}
-                        placeholder="110"
-                        className="w-full p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-center"
+                        className="w-full p-1 bg-slate-50 border border-slate-200 rounded text-center text-xs font-semibold"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Digital Signature */}
-                <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
-                  <div className="flex items-center justify-between text-xs font-bold text-slate-800">
-                    <span className="flex items-center gap-1.5">
-                      <FileSignature className="w-4 h-4 text-brand-600" />
-                      <span>Digitale Klienten-Unterschrift</span>
-                    </span>
-                    {hasSigned && (
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                        ✓ Quittiert
-                      </span>
-                    )}
+                {/* Signature Pad */}
+                <div
+                  onClick={() => setHasSigned(!hasSigned)}
+                  className="bg-white p-2.5 rounded-xl border border-slate-200/80 text-center cursor-pointer hover:bg-slate-50 transition"
+                >
+                  <div className="text-[10px] font-medium text-slate-400 mb-1">
+                    {hasSigned ? '✓ Quittiert vom Klienten' : 'Tippen für Klienten-Unterschrift'}
                   </div>
-                  
-                  <div
-                    onClick={() => setHasSigned(true)}
-                    className="h-16 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center cursor-pointer hover:bg-slate-100 transition"
-                  >
-                    {hasSigned ? (
-                      <span className="font-serif italic text-lg text-slate-800 select-none">
-                        ✍️ {currentClient.name}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-slate-400 font-medium">
-                        Tippen zum elektronischen Abzeichnen
-                      </span>
-                    )}
-                  </div>
+                  {hasSigned ? (
+                    <div className="font-serif italic text-sm text-slate-800">
+                      ✍️ {currentClient.name}
+                    </div>
+                  ) : (
+                    <div className="text-slate-300 text-xs">Unterschriftsfeld</div>
+                  )}
                 </div>
 
-                {/* Complete Button */}
+                {/* Single Primary Action: Complete */}
                 <button
                   onClick={handleCompleteStop}
-                  className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-sm rounded-2xl shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2"
+                  className="w-full py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-xs transition"
                 >
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>Halt #{currentStop?.order} abschließen</span>
+                  Halt #{currentStop?.order} abschließen
                 </button>
-              </div>
-            ) : (
-              <div className="p-8 text-center text-slate-500">
-                Kein Klient ausgewählt.
               </div>
             )}
           </div>

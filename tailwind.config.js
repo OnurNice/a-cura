@@ -9,28 +9,29 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: '#ecfdf5',
-          100: '#d1fae5',
-          200: '#a7f3d0',
-          300: '#6ee7b7',
-          400: '#34d399',
-          500: '#10b981',
-          600: '#059669',
-          700: '#047857',
-          800: '#065f46',
-          900: '#064e3b',
-          950: '#022c22',
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb', // A-Cura Corporate Blue
+          700: '#1d4ed8',
+          800: '#1e40af', // A-Cura Deep Navy
+          900: '#1e3a8a',
+          950: '#0f172a',
         },
         acura: {
-          blue: '#0284c7',
-          teal: '#0d9488',
-          dark: '#0f172a',
-          coral: '#f43f5e',
-          gold: '#f59e0b',
+          navy: '#0f172a',
+          blue: '#2563eb',
+          royal: '#1e40af',
+          light: '#eff6ff',
+          gray: '#64748b',
+          subtle: '#f8fafc',
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
       }
     },
   },

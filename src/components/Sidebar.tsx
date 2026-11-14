@@ -9,10 +9,6 @@ import {
   UserCheck,
   ReceiptEuro,
   FileCheck2,
-  PhoneCall,
-  Sparkles,
-  ChevronRight,
-  ShieldCheck,
   MapPin
 } from 'lucide-react';
 
@@ -38,147 +34,72 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   currentTab,
   onSelectTab,
-  pendingSickCount,
-  activeToursCount,
-  totalClientsCount
+  pendingSickCount
 }) => {
   const menuItems = [
-    {
-      id: 'dashboard' as NavTab,
-      label: 'Cockpit & Leitstand',
-      icon: LayoutDashboard,
-      badge: null
-    },
-    {
-      id: 'tours' as NavTab,
-      label: 'Touren & KI-Routen',
-      icon: Navigation,
-      badge: `${activeToursCount} aktiv`,
-      badgeColor: 'bg-emerald-100 text-emerald-800'
-    },
-    {
-      id: 'caregiver' as NavTab,
-      label: 'Pfleger-App (Mobil)',
-      icon: Smartphone,
-      badge: 'Live',
-      badgeColor: 'bg-blue-100 text-blue-800'
-    },
-    {
-      id: 'clients' as NavTab,
-      label: 'Klienten & Pflegeakten',
-      icon: Users,
-      badge: `${totalClientsCount}`,
-      badgeColor: 'bg-slate-100 text-slate-700'
-    },
-    {
-      id: 'roster' as NavTab,
-      label: 'Dienstplan & Schichten',
-      icon: CalendarDays,
-      badge: null
-    },
+    { id: 'dashboard' as NavTab, label: 'Leitstand', icon: LayoutDashboard },
+    { id: 'tours' as NavTab, label: 'Touren & KI-Routen', icon: Navigation },
+    { id: 'caregiver' as NavTab, label: 'Pfleger-App (Mobil)', icon: Smartphone },
+    { id: 'clients' as NavTab, label: 'Klienten & Akten', icon: Users },
+    { id: 'roster' as NavTab, label: 'Dienstplan', icon: CalendarDays },
     {
       id: 'absence' as NavTab,
       label: 'Urlaub & Krankheit',
       icon: CalendarOff,
-      badge: pendingSickCount > 0 ? `${pendingSickCount} AU` : null,
-      badgeColor: 'bg-rose-100 text-rose-800 font-bold'
+      badge: pendingSickCount > 0 ? `${pendingSickCount} AU` : null
     },
-    {
-      id: 'employees' as NavTab,
-      label: 'Mitarbeiter & Fuhrpark',
-      icon: UserCheck,
-      badge: null
-    },
-    {
-      id: 'payroll' as NavTab,
-      label: 'Lohnbuchhaltung',
-      icon: ReceiptEuro,
-      badge: 'DATEV',
-      badgeColor: 'bg-amber-100 text-amber-800'
-    },
-    {
-      id: 'billing' as NavTab,
-      label: 'SGB Abrechnung',
-      icon: FileCheck2,
-      badge: null
-    }
+    { id: 'employees' as NavTab, label: 'Mitarbeiter & KFZ', icon: UserCheck },
+    { id: 'payroll' as NavTab, label: 'Lohnbuchhaltung', icon: ReceiptEuro },
+    { id: 'billing' as NavTab, label: 'Kassenabrechnung', icon: FileCheck2 }
   ];
 
   return (
-    <aside className="w-64 bg-white border-r border-slate-200 min-h-[calc(100vh-4rem)] flex flex-col justify-between p-4">
-      <div className="space-y-6">
-        {/* Navigation list */}
-        <div>
-          <div className="px-3 mb-2 text-[11px] font-bold tracking-wider text-slate-400 uppercase">
-            Pflege-Verwaltung
-          </div>
-          <nav className="space-y-1">
-            {menuItems.map(item => {
-              const Icon = item.icon;
-              const isActive = currentTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => onSelectTab(item.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                    isActive
-                      ? 'bg-brand-50 text-brand-700 font-bold shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon
-                      className={`w-4 h-4 ${
-                        isActive ? 'text-brand-600 stroke-[2.4]' : 'text-slate-400'
-                      }`}
-                    />
-                    <span>{item.label}</span>
-                  </div>
-                  {item.badge && (
-                    <span
-                      className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                        item.badgeColor || 'bg-slate-100 text-slate-600'
-                      }`}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Location Dispatch Info */}
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-3.5 rounded-xl shadow-sm border border-slate-700">
-          <div className="flex items-center gap-2 mb-2">
-            <MapPin className="w-4 h-4 text-brand-400" />
-            <div className="text-xs font-bold">Stützpunkt Wetzlar</div>
-          </div>
-          <p className="text-[11px] text-slate-300 mb-3">
-            Ostendstraße 10, 35584 Wetzlar (Naunheim)
-          </p>
-          <div className="pt-2 border-t border-slate-700 flex items-center justify-between text-[11px]">
-            <span className="text-emerald-400 font-medium flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              24h Rufbereitschaft
-            </span>
-            <span className="font-mono text-slate-300">06441 / 7869</span>
-          </div>
-        </div>
+    <aside className="w-60 bg-white border-r border-slate-200/80 min-h-[calc(100vh-4rem)] flex flex-col justify-between p-3.5">
+      <div>
+        <nav className="space-y-1">
+          {menuItems.map(item => {
+            const Icon = item.icon;
+            const isActive = currentTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => onSelectTab(item.id)}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                  isActive
+                    ? 'bg-brand-50 text-brand-800 font-bold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Icon
+                    className={`w-4 h-4 ${
+                      isActive ? 'text-brand-700' : 'text-slate-400'
+                    }`}
+                  />
+                  <span>{item.label}</span>
+                </div>
+                {item.badge && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-rose-100 text-rose-800">
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
       </div>
 
-      {/* Bottom SaaS License Info */}
-      <div className="pt-4 border-t border-slate-100">
-        <div className="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-          <span className="flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            A-Cura Care OS v2.4
-          </span>
-          <span className="font-semibold text-slate-700">DSGVO §9</span>
+      {/* Subtle Stützpunkt Info */}
+      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/60 text-xs text-slate-600">
+        <div className="flex items-center gap-1.5 font-bold text-slate-800 mb-1">
+          <MapPin className="w-3.5 h-3.5 text-brand-600" />
+          <span>A-Cura Wetzlar</span>
         </div>
-        <div className="text-[10px] text-slate-400">
-          Lizenz: Ambulanter Pflegedienst Wetzlar
+        <div className="text-[11px] text-slate-500">
+          Ostendstraße 10, Naunheim
+        </div>
+        <div className="text-[11px] font-mono text-slate-400 mt-1">
+          06441 / 7869627
         </div>
       </div>
     </aside>

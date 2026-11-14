@@ -108,7 +108,7 @@ export const PayrollView: React.FC<PayrollViewProps> = ({
 
           <button
             onClick={handleExportDatevCSV}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/20 transition flex items-center gap-2"
+            className="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white font-semibold text-xs rounded-xl shadow-xs transition flex items-center gap-2"
           >
             <Download className="w-3.5 h-3.5" />
             <span>DATEV CSV Export</span>
